@@ -1,40 +1,144 @@
-# Explain how make Local repository
+# Mapping in DB
 
-1. **Intialize** it by using command `git init`
+- In this document we discuss Database mapping
 
-2. If we have files we should tracked it by using `git add <file_name>`
+![photo](./gg.png)
 
-    > if we want tracked all files once we use **`git add . `**
-3. After that any changes in files will tracked to see there is any changes or not using `git status`
+- There are some of steps should follow them:
 
-4. After any changes we should make two thing 
-    - First add it convert from WT to stagging area by using `git add . `
+## 1. Mapping For regular Entity
 
-    - second commit it and convert from stagging area to history by using `git commit -m "description of commit `   
+- For each strong entity, create a table that inlcudes all simple attributes.
+    - **Example**
 
-    - ***NOTE*** 
-        - We can add and commit changes by using one command it is ` git commit -am "description of commit`
+        ![photo](./regular.png)
+
+        ![photo](./table_regular.png)
+----------------------
+- If we have **multivalued attribute**, we converted it by make **two tables:** 
+    - The first table for entity and it's attributes without multivalued attribute.
+    - Second table for multivalued attribute and put in it the primary key of entity.
+    - **Example**
+
+        ![photo](./multivalued.png)
+
+        ![photo](table_multivalued.png)
+-------------------
+- If we have **Composite attribute**, convert to one table with the components of composite attribute.
+    - **Example**
+
+        ![photo](./composte.png)
+
+        ![photo](table_composte.png)
+---------------------
+- If we have a **Complex attribute** we convert as multivalued attribute to **two tables** and **second** table consiste the primary key of entity and components of composite attribute.
+    - Example
+
+        ![photo](./complex.png)
+        
+        ![photo](./table_complex.png)
+
+-----------------
+- If we have a **drived attribute**, In the most cases Derived attribute not be stored in DB
+------------------
+## 2. Mapping of Weak Entity Types
+
+- Create table for each weak entity.
+- Weak entity has a partial key. 
+- make a compostie primary key (partial key + primay key for strong entity)
+    - **Example**
+
+        ![photo](./weak_entity.png)
+
+        ![photo](./table_weak_entity.png)
+
+---------------------
+## 3. Mapping of Binary 1:1 Relation Types
+
+- Look on participation there are three cases:
+    **1. (total - total)**
+    - There is one table have attributes for each entity and there are two primary keyschose one of them is a primary key
+
+    - **Example** 
+
+        ![photo](./one_total_one_total.png)
+
+        ![photo](table_one_total_one_total.png)
+
+    ------
+    **2. (partial - total)**
+    - There are two tables for two entities.
+    - Add **Foreign Key** into  table with the total participation relationship  to represent optional side.
+    
+    - **Example**
+
+        ![photo](./partial_total.png)
+
+        ![photo](./table_partial_total.png)
+    
+    ---------
+    **3. (partial - partial)**
+    - There are three tables
+    - two tables for two entities
+    - third table has two primary keys one of them is act as a priamry key.
+
+    - **Example** 
+
+        ![photo](./partial-partial.png)
+
+        ![photo](./table_patial_partial.png)
+---------------
+## 4. Mapping of Binary 1:N Relationship Types.
+- Look participation from N side.
+- If participation is partial: 
+    - there are **three tables** 
+        - two of them for entities.
+        - third table consist of the primary keys of two tables and the primary key of the table is N-side table.
+        - **Example**
+
+            ![photo](./partial(1-N).png)
+
+            ![photo](./table_partial(1-N).png)
+- If participation is total:
+    - There are two tables.
+    - The primary key of 1-side is act as foreign key in N-side.
+    - **Example**
+
+        ![photo](./total(1-N).png)
+
+        ![photo](./table_total_(1_N).png)
+------------------
+## 5. Mapping of Binary M:N Relationship Types
+- Don't Look at participation.
+- Create a new third  table.
+- Add FKs to the new table for  both parent tables.
+
+- **Example**
+
+    ![photo](./n-n.png)
+
+    ![photo](./Table(N-N).png)
+
+-------------
+
+## 6. Mapping of N-ary Relationship Types.
+
+- If n > 2 then 
+    - Create a new third  table
+    - Add FKs to the new table for all parent tables
+    - **Example**
+        ![photo](./N_relation.png)
+        ![photo](./table_n_relation.png)
+--------
+## 7. Mapping Unary Relationship
+
+- Create a new attribute act as foreign key refers to primary key in the same table.
+- **Example**
+
+    ![photo](./unary.png)
+
+    ![photo](./table_unary.png)
 
 ----
-## To push changes to repo on GIT-HUB
-
-- Make a remote repo on **GIT-HUB**
-- We should link between local repo and remote repo by using command that is 
-    - `git remote add origin <URL>`
-- change name of branch in local repo from **master** to **main** to be like the remote repo if you don't that is no errors appear. 
-    - `git branch -m main`
-- After that should the content in local repo to remote repo on **GIT-HUB** 
-    - `git push origin main `
-
-----
-# To sum up 
-| Command | Explain |
-| --- | --- |
-| git init | Make local repo |
-| git status | reflect the changes |
-| git add . | To Tracked All files |
-| git commit -m "Description of commit | To commit the changes |
-| git log | to see the commits | 
-| git remote add **`URL`** | to connect between local repo and remote repo
-| git branch -m *new_name* | change branch name |
-| git push origin main | to push changes and files to remote repo |
+### **Note** 
+- if there is an attribute on relationship put it in the table that have all primary keys together.
